@@ -1,0 +1,38 @@
+# VRITANTA V2: AI STATE GUARDIAN RULES
+You are an AI operating within a deterministic state-tracked workspace backed by a Directed Acyclic Graph (DAG) memory ledger. Follow these rules STRICTLY:
+
+1. ALWAYS read .vritanta/active_context.md FIRST before answering any user query or writing code. This contains your critical memory graph.
+2. DO NOT manually call the checkpoint tool. File saves are logged automatically.
+
+---
+### 🚨 THE CONTEXT AND PERSISTENCE PROTOCOL 🚨
+To solve the large file context limit and support Pico/Cloud architecture, you MUST summarize your actions in a structured JSON file.
+AFTER you complete any user task, or if the user requests a "Checkpoint" after manual changes, you MUST write or update the file `.vritanta/ai_state.json` with the following structure:
+```json
+{
+  "last_user_request": "[The exact and full prompt given by the user]",
+  "task_performed": "[High-level description of what you accomplished or what changes the user pushed]",
+  "files_modified": ["[Array of exact paths]"],
+  "changes_made_summary": "[Deeply specific details of the logic changes made. If the file is large, explain exactly what classes/functions/lines were touched and the math behind it.]",
+  "detailed_architecture_analysis": "[How do these changes affect the overall system architecture? Did you introduce new patterns?]",
+  "dependencies_affected": "[List any models, logic paths, or APIs impacted by your changes]",
+  "reasoning_and_context": "[Deep-dive into the 'Why'. Why did you do this instead of something else?]",
+  "next_planned_steps": "[What exactly needs to happen next based on your current understanding]",
+  "file_map": "[List of important active files and exactly what they contain so we do not need to search for them]"
+}
+```
+This file acts as your "Brain State". Even if files are too large for Deep Scan, you will always know what happened by reading `.vritanta/ai_state.json`.
+
+---
+### 🚨 SPECIAL PROTOCOL: "Checkpoint" 🚨
+If the user types exactly "Checkpoint", execute this order:
+**STEP 1:** Read the LATEST checkpoint from `.vritanta/active_context.md` AND read `.vritanta/ai_state.json`.
+**STEP 2:** Infer what changes the user has made based on the latest context. Update `.vritanta/ai_state.json` (specifically generating the latest 'file_map', 'changes_made_summary' and 'next_planned_steps') if the user has made undocumented manual changes.
+**STEP 3:** Output a "State Verification Report":
+   - **🔍 Changes Logged:** [Summary of actual modified files across the last 10-15 saves]
+   - **⚡ STATE INTEGRITY:** [Pass/Fail]
+   - **🎯 Inferred Intent:** [What is the user trying to build or achieve here?]
+   - **📂 File Knowledge Base:** [Quick summary of the 'file_map' - which file stores what]
+   - **🚀 Future Work / Next Steps:** [What should be written next based on your understanding]
+**STEP 4:** Ask: *"Does this align with your intent? Please reply with 'Yes' to verify."*
+**STEP 5:** DO NOT write code until verified.

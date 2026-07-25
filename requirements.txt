@@ -1,0 +1,11 @@
+selenium
+beautifulsoup4
+transformers
+torch
+polars
+pyarrow
+streamlit
+plotly
+python-dotenv
+openai
+webdriver-manager
